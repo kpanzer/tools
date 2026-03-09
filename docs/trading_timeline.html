@@ -8,7 +8,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   
   body {
-    background: #2F3437;
+    background: #191919;
     color: #f1f5f9;
     font-family: Arial, Helvetica, sans-serif;
     min-height: 100vh;
@@ -70,7 +70,7 @@
   .top-cards { display: flex; gap: 12px; align-items: stretch; flex-wrap: wrap; }
 
   .trading-card {
-    background: linear-gradient(135deg, #373C3F 0%, #3F4448 100%);
+    background: linear-gradient(135deg, #252525 0%, #2a2a2a 100%);
     border: 1px solid rgba(16,185,129,0.4);
     border-radius: 12px; padding: 14px 24px;
     min-width: 180px; text-align: center;
@@ -85,7 +85,7 @@
   .trading-card .sub { font-size: 11px; color: #34d399; margin-top: 4px; font-weight: 700; }
 
   .deadline-box {
-    background: #373C3F; border: 1px solid #4B5058;
+    background: #252525; border: 1px solid #373737;
     border-radius: 10px; padding: 12px 20px;
     display: flex; flex-direction: column; justify-content: center;
     gap: 6px; min-width: 200px;
@@ -107,14 +107,14 @@
   }
 
   .timeline-wrap {
-    background: #373C3F; border: 1px solid #4B5058;
+    background: #252525; border: 1px solid #373737;
     border-radius: 12px; overflow: hidden; margin-top: 20px;
   }
 
   .timeline-legend {
-    padding: 10px 20px; border-bottom: 1px solid #4B5058;
+    padding: 10px 20px; border-bottom: 1px solid #373737;
     display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 8px; background: #353A3D;
+    flex-wrap: wrap; gap: 8px; background: #202020;
   }
 
   .timeline-legend .left { font-size: 13px; font-weight: 700; color: #e2e8f0; }
@@ -124,34 +124,34 @@
 
   .tl-scroll { overflow-x: auto; overflow-y: visible; position: relative; }
   .tl-scroll::-webkit-scrollbar { height: 6px; }
-  .tl-scroll::-webkit-scrollbar-track { background: #373C3F; border-radius: 3px; }
-  .tl-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  .tl-scroll::-webkit-scrollbar-track { background: #252525; border-radius: 3px; }
+  .tl-scroll::-webkit-scrollbar-thumb { background: #2f2f2f; border-radius: 3px; }
 
   .tl-inner { position: relative; }
 
-  .clock-ruler { display: flex; border-bottom: 1px solid #4B5058; background: #353A3D; }
+  .clock-ruler { display: flex; border-bottom: 1px solid #373737; background: #202020; }
 
   .ruler-label {
     width: 120px; min-width: 120px; padding: 7px 10px;
     font-size: 9px; color: #64748b; text-transform: uppercase;
-    letter-spacing: 0.8px; border-right: 1px solid #4B5058;
+    letter-spacing: 0.8px; border-right: 1px solid #373737;
     display: flex; align-items: center; font-weight: 700;
   }
 
   .ruler-cell {
     width: 52px; min-width: 52px; text-align: center; padding: 7px 0;
     font-size: 9px; font-weight: 500; color: #e2e8f0;
-    border-right: 1px solid #4B5058;
+    border-right: 1px solid #373737;
   }
 
   .ruler-cell.active { color: #ffffff; font-weight: 700; }
 
   .iso-row { display: flex; }
-  .iso-row + .iso-row { border-top: 1px solid #4B5058; }
+  .iso-row + .iso-row { border-top: 1px solid #373737; }
 
   .iso-row-label {
     width: 120px; min-width: 120px; padding: 14px 10px;
-    border-right: 1px solid #4B5058;
+    border-right: 1px solid #373737;
     display: flex; flex-direction: column; justify-content: center;
   }
 
@@ -163,7 +163,7 @@
   .hour-cell {
     width: 52px; min-width: 52px; text-align: center; padding: 14px 0;
     font-size: 14px; font-weight: 600; color: #ffffff;
-    border-right: 1px solid #4B5058; position: relative;
+    border-right: 1px solid #373737; position: relative;
   }
 
   .hour-cell.now-est { color: #ffffff; font-weight: 800; }
@@ -187,7 +187,7 @@
   #needle-now .lbl {
     position: absolute; top: -22px; left: -26px;
     font-size: 10px; font-weight: 700; color: #ef4444;
-    background: #2F3437; padding: 2px 6px; border-radius: 4px;
+    background: #191919; padding: 2px 6px; border-radius: 4px;
     white-space: nowrap; border: 1px solid rgba(239,68,68,0.4);
   }
 
@@ -200,13 +200,13 @@
   #needle-dl .dot {
     position: absolute; top: -2px; left: -6px;
     width: 10px; height: 10px; border-radius: 50%;
-    background: #10b981; border: 2px solid #2F3437;
+    background: #10b981; border: 2px solid #191919;
   }
 
   #needle-dl .lbl {
     position: absolute; top: -22px; left: -38px;
     font-size: 10px; font-weight: 700; color: #10b981;
-    background: #2F3437; padding: 2px 6px; border-radius: 4px;
+    background: #191919; padding: 2px 6px; border-radius: 4px;
     white-space: nowrap; border: 1px solid rgba(16,185,129,0.4);
   }
 
@@ -218,7 +218,7 @@
 
   .bottom-legend { margin-top: 14px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
   .bottom-item {
-    background: #373C3F; border: 1px solid #4B5058;
+    background: #252525; border: 1px solid #373737;
     border-radius: 8px; padding: 7px 14px; font-size: 11px;
     display: flex; align-items: center; gap: 10px;
   }
