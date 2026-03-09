@@ -12,10 +12,10 @@
     color: #f1f5f9;
     font-family: Arial, Helvetica, sans-serif;
     min-height: 100vh;
-    padding: 24px 20px;
+    padding: 16px 12px;
   }
 
-  .container { max-width: 1500px; margin: 0 auto; }
+  .container { max-width: 100%; margin: 0 auto; }
 
   .header {
     display: flex;
@@ -36,7 +36,7 @@
   }
 
   .big-clock {
-    font-size: 38px;
+    font-size: 30px;
     font-weight: 700;
     color: #ffffff;
     letter-spacing: -1px;
@@ -81,7 +81,7 @@
     letter-spacing: 1px; margin-bottom: 4px; font-weight: 700;
   }
 
-  .trading-card .he-value { font-size: 42px; font-weight: 700; color: #ffffff; line-height: 1; }
+  .trading-card .he-value { font-size: 32px; font-weight: 700; color: #ffffff; line-height: 1; }
   .trading-card .sub { font-size: 11px; color: #34d399; margin-top: 4px; font-weight: 700; }
 
   .deadline-box {
@@ -122,25 +122,25 @@
   .legend-item { display: flex; align-items: center; gap: 5px; }
   .legend-swatch { display: inline-block; width: 14px; height: 3px; border-radius: 2px; }
 
-  .tl-scroll { overflow-x: auto; overflow-y: visible; position: relative; }
+  .tl-scroll { overflow: hidden; position: relative; }
   .tl-scroll::-webkit-scrollbar { height: 6px; }
   .tl-scroll::-webkit-scrollbar-track { background: #252525; border-radius: 3px; }
   .tl-scroll::-webkit-scrollbar-thumb { background: #2f2f2f; border-radius: 3px; }
 
   .tl-inner { position: relative; }
 
-  .clock-ruler { display: flex; border-bottom: 1px solid #373737; background: #202020; }
+  .clock-ruler { display: flex; border-bottom: 1px solid #373737; background: #202020; width: 100%; }
 
   .ruler-label {
-    width: 120px; min-width: 120px; padding: 7px 10px;
-    font-size: 9px; color: #64748b; text-transform: uppercase;
-    letter-spacing: 0.8px; border-right: 1px solid #373737;
+    width: 80px; min-width: 80px; padding: 7px 6px;
+    font-size: 8px; color: #64748b; text-transform: uppercase;
+    letter-spacing: 0.5px; border-right: 1px solid #373737;
     display: flex; align-items: center; font-weight: 700;
   }
 
   .ruler-cell {
-    width: 52px; min-width: 52px; text-align: center; padding: 7px 0;
-    font-size: 9px; font-weight: 500; color: #e2e8f0;
+    flex: 1; min-width: 0; text-align: center; padding: 7px 0;
+    font-size: 8px; font-weight: 500; color: #e2e8f0;
     border-right: 1px solid #373737;
   }
 
@@ -150,19 +150,19 @@
   .iso-row + .iso-row { border-top: 1px solid #373737; }
 
   .iso-row-label {
-    width: 120px; min-width: 120px; padding: 14px 10px;
+    width: 80px; min-width: 80px; padding: 10px 6px;
     border-right: 1px solid #373737;
     display: flex; flex-direction: column; justify-content: center;
   }
 
-  .iso-row-label .name { font-size: 14px; font-weight: 700; }
-  .iso-row-label .sub-label { font-size: 9px; color: #94a3b8; margin-top: 3px; }
+  .iso-row-label .name { font-size: 11px; font-weight: 700; }
+  .iso-row-label .sub-label { font-size: 7px; color: #94a3b8; margin-top: 2px; }
   .iso-row-label.est .name { color: #93c5fd; }
   .iso-row-label.ept .name { color: #c4b5fd; }
 
   .hour-cell {
-    width: 52px; min-width: 52px; text-align: center; padding: 14px 0;
-    font-size: 14px; font-weight: 600; color: #ffffff;
+    flex: 1; min-width: 0; text-align: center; padding: 10px 0;
+    font-size: 12px; font-weight: 600; color: #ffffff;
     border-right: 1px solid #373737; position: relative;
   }
 
@@ -283,7 +283,11 @@
 </div>
 
 <script>
-const CW = 52, LW = 120;
+const LW = 80;
+function getCW() {
+  const inner = document.getElementById('tl-inner');
+  return (inner.offsetWidth - LW) / 24;
+}
 const p2 = n => n.toString().padStart(2,'0');
 
 function fmtDate(d) {
@@ -350,7 +354,7 @@ function tradingFor(estH){
     pr.appendChild(c);
   }
 
-  document.getElementById('tl-inner').style.minWidth=(LW+24*CW)+'px';
+  // Let flexbox handle sizing — no fixed min-width
 })();
 
 let prevH=-1, scrolled=false;
@@ -393,6 +397,7 @@ function tick(){
   }
 
   // Needles
+  const CW=getCW();
   const nL=LW+edt*CW+prog*CW;
   const dH=(edt+2)%24;
   const dL=LW+dH*CW+prog*CW;
@@ -405,12 +410,7 @@ function tick(){
   if(dL>nL){ sh.style.left=nL+'px'; sh.style.width=(dL-nL)+'px'; sh.style.display='block'; }
   else { sh.style.display='none'; }
 
-  // Scroll once
-  if(!scrolled){
-    const s=document.getElementById('tl-scroll');
-    s.scrollLeft=Math.max(0, edt*CW - s.clientWidth/2 + CW/2);
-    scrolled=true;
-  }
+  // No scroll needed — everything fits
 }
 
 tick();
