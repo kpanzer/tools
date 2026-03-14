@@ -266,6 +266,7 @@
     </div>
     <div class="tl-scroll" id="tl-scroll">
       <div class="tl-inner" id="tl-inner">
+        <div class="clock-ruler" id="pruler"></div>
         <div class="clock-ruler" id="ruler"></div>
         <div class="iso-row" id="est-row"></div>
         <div class="iso-row" id="ept-row"></div>
@@ -307,7 +308,18 @@ function tradingFor(estH){
 
 // Build static DOM once
 (function build(){
-  // Ruler
+  // Pacific Ruler
+  const pruler=document.getElementById('pruler');
+  const prl=document.createElement('div'); prl.className='ruler-label'; prl.textContent='PDT Clock';
+  pruler.appendChild(prl);
+  for(let i=0;i<24;i++){
+    const c=document.createElement('div');
+    c.className='ruler-cell'; c.id='prc'+i;
+    c.textContent=p2(i)+':00';
+    pruler.appendChild(c);
+  }
+
+  // EDT Ruler
   const ruler=document.getElementById('ruler');
   const rl=document.createElement('div'); rl.className='ruler-label'; rl.textContent='EDT Clock';
   ruler.appendChild(rl);
@@ -362,7 +374,7 @@ let prevH=-1, scrolled=false;
 function tick(){
   const now=new Date();
   const uh=now.getUTCHours(), um=now.getUTCMinutes(), us=now.getUTCSeconds();
-  const edt=(uh-4+24)%24, est=(uh-5+24)%24;
+  const edt=(uh-4+24)%24, est=(uh-5+24)%24, pdt=(uh-7+24)%24;
   const prog=(um*60+us)/3600;
   const cheEST=est+1>24?1:est+1;
 
@@ -378,7 +390,9 @@ function tick(){
   // Highlight active hour (only on hour change)
   if(edt!==prevH){
     for(let i=0;i<24;i++){
-      // Ruler
+      // Pacific Ruler
+      document.getElementById('prc'+i).className=i===pdt?'ruler-cell active':'ruler-cell';
+      // EDT Ruler
       document.getElementById('rc'+i).className=i===edt?'ruler-cell active':'ruler-cell';
       
       // EST
