@@ -308,14 +308,15 @@ function tradingFor(estH){
 
 // Build static DOM once
 (function build(){
-  // Pacific Ruler
+  // Pacific Ruler — each column shows the PDT hour that matches the EDT column
   const pruler=document.getElementById('pruler');
   const prl=document.createElement('div'); prl.className='ruler-label'; prl.textContent='PDT Clock';
   pruler.appendChild(prl);
   for(let i=0;i<24;i++){
+    const pdtH=(i-3+24)%24; // EDT column i → PDT is 3h behind
     const c=document.createElement('div');
     c.className='ruler-cell'; c.id='prc'+i;
-    c.textContent=p2(i)+':00';
+    c.textContent=p2(pdtH)+':00';
     pruler.appendChild(c);
   }
 
