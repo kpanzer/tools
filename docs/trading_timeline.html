@@ -6,11 +6,11 @@
 <title>Trading Timeline</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  
+
   body {
     background: #191919;
     color: #f1f5f9;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
     min-height: 100vh;
     padding: 16px 12px;
   }
@@ -63,9 +63,19 @@
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
   @keyframes glow { 0%,100%{box-shadow:0 0 10px rgba(239,68,68,0.6)} 50%{box-shadow:0 0 24px rgba(239,68,68,0.2)} }
 
-  .est-line { font-size: 13px; color: #94a3b8; }
+  .est-line {
+    font-size: 20px;
+    color: #93c5fd;
+    font-weight: 700;
+    margin-top: 2px;
+  }
   .est-line .val { color: #93c5fd; font-weight: 700; }
-  .est-line .dim { color: #64748b; margin-left: 4px; }
+  .est-line .he-tag {
+    color: #93c5fd;
+    font-weight: 800;
+    margin-left: 10px;
+    font-size: 22px;
+  }
 
   .top-cards { display: flex; gap: 12px; align-items: stretch; flex-wrap: wrap; }
 
@@ -83,6 +93,21 @@
 
   .trading-card .he-value { font-size: 32px; font-weight: 700; color: #ffffff; line-height: 1; }
   .trading-card .sub { font-size: 11px; color: #34d399; margin-top: 4px; font-weight: 700; }
+
+  .countdown-wrap {
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid rgba(16,185,129,0.2);
+  }
+  .countdown-label {
+    font-size: 9px; color: #64748b; text-transform: uppercase;
+    letter-spacing: 0.8px; font-weight: 700; margin-bottom: 2px;
+  }
+  .countdown-value {
+    font-size: 22px; font-weight: 700; color: #34d399;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.5px;
+  }
+  .countdown-value.urgent { color: #ef4444; }
+  .countdown-value.warning { color: #fbbf24; }
 
   .deadline-box {
     background: #252525; border: 1px solid #373737;
@@ -121,30 +146,37 @@
   .timeline-legend .right { display: flex; gap: 20px; font-size: 11px; color: #94a3b8; font-weight: 600; }
   .legend-item { display: flex; align-items: center; gap: 5px; }
   .legend-swatch { display: inline-block; width: 14px; height: 3px; border-radius: 2px; }
+  .legend-swatch.dashed { border-top: 2px dashed; height: 0; background: none; }
 
   .tl-scroll { overflow: hidden; position: relative; }
-  .tl-scroll::-webkit-scrollbar { height: 6px; }
-  .tl-scroll::-webkit-scrollbar-track { background: #252525; border-radius: 3px; }
-  .tl-scroll::-webkit-scrollbar-thumb { background: #2f2f2f; border-radius: 3px; }
 
   .tl-inner { position: relative; }
 
-  .clock-ruler { display: flex; border-bottom: 1px solid #373737; background: #202020; width: 100%; }
+  .clock-ruler { display: flex; border-bottom: 1px solid #373737; background: #1a1a1a; width: 100%; }
 
   .ruler-label {
-    width: 80px; min-width: 80px; padding: 7px 6px;
-    font-size: 8px; color: #64748b; text-transform: uppercase;
+    width: 80px; min-width: 80px; padding: 8px 6px;
+    font-size: 10px; color: #64748b; text-transform: uppercase;
     letter-spacing: 0.5px; border-right: 1px solid #373737;
     display: flex; align-items: center; font-weight: 700;
   }
 
+
   .ruler-cell {
-    flex: 1; min-width: 0; text-align: center; padding: 7px 0;
-    font-size: 8px; font-weight: 500; color: #e2e8f0;
-    border-right: 1px solid #373737;
+    flex: 1; min-width: 0; text-align: center; padding: 8px 0;
+    font-size: 12px; font-weight: 600; color: #9ca3af;
+    border-right: 1px solid #2d2d2d;
+    display: flex; align-items: center; justify-content: center;
   }
 
-  .ruler-cell.active { color: #ffffff; font-weight: 700; }
+  .ruler-cell.active { font-weight: 800; background: rgba(255,255,255,0.05); }
+
+  /* EDT ruler: white text */
+  #ruler .ruler-cell { color: #d1d5db; }
+  #ruler .ruler-cell.active { color: #ffffff; }
+
+  /* PDT ruler: same style as EDT, no highlighting */
+  #pruler .ruler-cell { color: #d1d5db; }
 
   .iso-row { display: flex; }
   .iso-row + .iso-row { border-top: 1px solid #373737; }
@@ -161,18 +193,20 @@
   .iso-row-label.ept .name { color: #c4b5fd; }
 
   .hour-cell {
-    flex: 1; min-width: 0; text-align: center; padding: 10px 0;
-    font-size: 12px; font-weight: 600; color: #ffffff;
-    border-right: 1px solid #373737; position: relative;
+    flex: 1; min-width: 0; text-align: center; padding: 14px 0;
+    font-size: 15px; font-weight: 700; color: #e2e8f0;
+    border-right: 1px solid #2d2d2d; position: relative;
+    display: flex; align-items: center; justify-content: center;
   }
 
-  .hour-cell.now-est { color: #ffffff; font-weight: 800; }
-  .hour-cell.now-ept { color: #ffffff; font-weight: 800; }
+  .hour-cell.now-est { color: #ffffff; font-weight: 800; background: rgba(147,197,253,0.08); }
+  .hour-cell.now-ept { color: #ffffff; font-weight: 800; background: rgba(196,181,253,0.08); }
   .peak-icon { display: none; }
   .active-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; display: none; }
   .active-bar.est { background: #93c5fd; }
   .active-bar.ept { background: #c4b5fd; }
 
+  /* NOW needle — solid red */
   #needle-now {
     position: absolute; top: 0; bottom: 0; width: 2px;
     background: #ef4444; z-index: 20; pointer-events: none;
@@ -185,26 +219,47 @@
   }
 
   #needle-now .lbl {
-    position: absolute; top: -22px; left: -26px;
+    position: absolute; top: -22px; left: -18px;
     font-size: 10px; font-weight: 700; color: #ef4444;
     background: #191919; padding: 2px 6px; border-radius: 4px;
     white-space: nowrap; border: 1px solid rgba(239,68,68,0.4);
   }
 
-  #needle-dl {
+  /* T-1 needle — dashed blue */
+  #needle-t1 {
     position: absolute; top: 0; bottom: 0; width: 0;
-    border-left: 2px dashed #10b981;
+    border-left: 2px dashed #60a5fa;
     z-index: 18; pointer-events: none; opacity: 0.9;
   }
 
-  #needle-dl .dot {
+  #needle-t1 .dot {
+    position: absolute; top: -2px; left: -6px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #60a5fa; border: 2px solid #191919;
+  }
+
+  #needle-t1 .lbl {
+    position: absolute; top: -22px; left: -14px;
+    font-size: 10px; font-weight: 700; color: #60a5fa;
+    background: #191919; padding: 2px 6px; border-radius: 4px;
+    white-space: nowrap; border: 1px solid rgba(96,165,250,0.4);
+  }
+
+  /* T-2 needle — dashed green */
+  #needle-t2 {
+    position: absolute; top: 0; bottom: 0; width: 0;
+    border-left: 2px dashed #10b981;
+    z-index: 17; pointer-events: none; opacity: 0.9;
+  }
+
+  #needle-t2 .dot {
     position: absolute; top: -2px; left: -6px;
     width: 10px; height: 10px; border-radius: 50%;
     background: #10b981; border: 2px solid #191919;
   }
 
-  #needle-dl .lbl {
-    position: absolute; top: -22px; left: -38px;
+  #needle-t2 .lbl {
+    position: absolute; top: -22px; left: -14px;
     font-size: 10px; font-weight: 700; color: #10b981;
     background: #191919; padding: 2px 6px; border-radius: 4px;
     white-space: nowrap; border: 1px solid rgba(16,185,129,0.4);
@@ -212,7 +267,7 @@
 
   #shade {
     position: absolute; top: 0; bottom: 0;
-    background: rgba(16,185,129,0.06);
+    background: rgba(96,165,250,0.05);
     z-index: 1; pointer-events: none; display: none;
   }
 
@@ -239,13 +294,17 @@
           <div class="live-badge"><div class="live-dot"></div>LIVE</div>
         </div>
       </div>
-      <div class="est-line">EST: <span class="val" id="v-est"></span><span class="dim" id="v-esthe"></span></div>
+      <div class="est-line">EST <span class="val" id="v-est"></span><span class="he-tag" id="v-esthe"></span></div>
     </div>
     <div class="top-cards">
       <div class="trading-card">
         <div class="label">Trading for (ONT)</div>
         <div class="he-value" id="v-tf"></div>
         <div class="sub">EST</div>
+        <div class="countdown-wrap">
+          <div class="countdown-label">Time remaining</div>
+          <div class="countdown-value" id="v-countdown"></div>
+        </div>
       </div>
       <div class="deadline-box">
         <div class="title">Bid / Offer Deadlines</div>
@@ -261,7 +320,8 @@
       <div class="left">24h Timeline · Hour Ending</div>
       <div class="right">
         <span class="legend-item"><span class="legend-swatch" style="background:#ef4444;"></span> Now</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#10b981;"></span> 2h Deadline</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="border-color:#60a5fa;"></span> T-1</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="border-color:#10b981;"></span> T-2</span>
       </div>
     </div>
     <div class="tl-scroll" id="tl-scroll">
@@ -271,8 +331,9 @@
         <div class="iso-row" id="est-row"></div>
         <div class="iso-row" id="ept-row"></div>
         <div id="shade"></div>
-        <div id="needle-now"><div class="dot"></div><div class="lbl" id="v-nlbl"></div></div>
-        <div id="needle-dl"><div class="dot"></div><div class="lbl">+2h DEADLINE</div></div>
+        <div id="needle-now"><div class="dot"></div><div class="lbl" id="v-nlbl">Now</div></div>
+        <div id="needle-t1"><div class="dot"></div><div class="lbl">T-1</div></div>
+        <div id="needle-t2"><div class="dot"></div><div class="lbl">T-2</div></div>
       </div>
     </div>
   </div>
@@ -300,7 +361,6 @@ function fmtDate(d) {
 }
 
 function tradingFor(estH){
-  // Current EST hour + 3 = flow start hour, HE = flow start + 1
   let he = estH + 3 + 1;
   if (he > 24) he -= 24;
   return he;
@@ -308,12 +368,12 @@ function tradingFor(estH){
 
 // Build static DOM once
 (function build(){
-  // Pacific Ruler — each column shows the PDT hour that matches the EDT column
+  // Pacific Ruler
   const pruler=document.getElementById('pruler');
   const prl=document.createElement('div'); prl.className='ruler-label'; prl.textContent='PDT Clock';
   pruler.appendChild(prl);
   for(let i=0;i<24;i++){
-    const pdtH=(i-3+24)%24; // EDT column i → PDT is 3h behind
+    const pdtH=(i-3+24)%24;
     const c=document.createElement('div');
     c.className='ruler-cell'; c.id='prc'+i;
     c.textContent=p2(pdtH)+':00';
@@ -341,8 +401,7 @@ function tradingFor(estH){
     c.className='hour-cell'; c.id='ec'+i;
     const he=i===0?24:i;
     c.dataset.he=he;
-    const t=document.createTextNode(he);
-    c.appendChild(t);
+    c.appendChild(document.createTextNode(he));
     const bar=document.createElement('div');
     bar.className='active-bar est'; bar.id='eb'+i;
     c.appendChild(bar);
@@ -359,18 +418,15 @@ function tradingFor(estH){
     c.className='hour-cell'; c.id='pc'+i;
     const he=i+1>24?1:i+1;
     c.dataset.he=he;
-    const t=document.createTextNode(he);
-    c.appendChild(t);
+    c.appendChild(document.createTextNode(he));
     const bar=document.createElement('div');
     bar.className='active-bar ept'; bar.id='pb'+i;
     c.appendChild(bar);
     pr.appendChild(c);
   }
-
-  // Let flexbox handle sizing — no fixed min-width
 })();
 
-let prevH=-1, scrolled=false;
+let prevH=-1;
 
 function tick(){
   const now=new Date();
@@ -388,25 +444,33 @@ function tick(){
   const tf=tradingFor(est);
   document.getElementById('v-tf').textContent='HE '+tf;
 
-  // Highlight active hour (only on hour change)
+  // Countdown: time remaining in the current hour (resets every hour from 59:59 to 00:00)
+  const remMin = 59 - um;
+  const remSec = 59 - us;
+  const countdownEl = document.getElementById('v-countdown');
+  countdownEl.textContent = p2(remMin) + ':' + p2(remSec);
+  // Color: green > 15 min, yellow 5-15 min, red < 5 min
+  if(remMin < 5) countdownEl.className = 'countdown-value urgent';
+  else if(remMin < 15) countdownEl.className = 'countdown-value warning';
+  else countdownEl.className = 'countdown-value';
+
+  // Highlight active hour
   if(edt!==prevH){
     for(let i=0;i<24;i++){
-      // Pacific Ruler
-      document.getElementById('prc'+i).className=i===pdt?'ruler-cell active':'ruler-cell';
+      // Pacific Ruler — no highlighting
+      document.getElementById('prc'+i).className='ruler-cell';
       // EDT Ruler
       document.getElementById('rc'+i).className=i===edt?'ruler-cell active':'ruler-cell';
-      
+
       // EST
       const ec=document.getElementById('ec'+i);
-      const enow=i===edt;
-      ec.className='hour-cell'+(enow?' now-est':'');
-      document.getElementById('eb'+i).style.display=enow?'block':'none';
+      ec.className='hour-cell'+(i===edt?' now-est':'');
+      document.getElementById('eb'+i).style.display=i===edt?'block':'none';
 
       // EPT
       const pc=document.getElementById('pc'+i);
-      const pnow=i===edt;
-      pc.className='hour-cell'+(pnow?' now-ept':'');
-      document.getElementById('pb'+i).style.display=pnow?'block':'none';
+      pc.className='hour-cell'+(i===edt?' now-ept':'');
+      document.getElementById('pb'+i).style.display=i===edt?'block':'none';
     }
     prevH=edt;
   }
@@ -414,18 +478,29 @@ function tick(){
   // Needles
   const CW=getCW();
   const nL=LW+edt*CW+prog*CW;
-  const dH=(edt+2)%24;
-  const dL=LW+dH*CW+prog*CW;
 
+  // T-1 = 1 hour ahead of now
+  const t1H=(edt+1)%24;
+  const t1L=LW+t1H*CW+prog*CW;
+
+  // T-2 = 2 hours ahead of now
+  const t2H=(edt+2)%24;
+  const t2L=LW+t2H*CW+prog*CW;
+
+  // NOW — solid red
   document.getElementById('needle-now').style.left=nL+'px';
-  document.getElementById('v-nlbl').textContent='NOW '+p2(edt)+':'+p2(um);
-  document.getElementById('needle-dl').style.left=dL+'px';
+  document.getElementById('v-nlbl').textContent='Now';
 
+  // T-1 — dashed blue
+  document.getElementById('needle-t1').style.left=t1L+'px';
+
+  // T-2 — dashed green
+  document.getElementById('needle-t2').style.left=t2L+'px';
+
+  // Shade between Now and T-2
   const sh=document.getElementById('shade');
-  if(dL>nL){ sh.style.left=nL+'px'; sh.style.width=(dL-nL)+'px'; sh.style.display='block'; }
+  if(t2L>nL){ sh.style.left=nL+'px'; sh.style.width=(t2L-nL)+'px'; sh.style.display='block'; }
   else { sh.style.display='none'; }
-
-  // No scroll needed — everything fits
 }
 
 tick();
