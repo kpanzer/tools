@@ -2,7 +2,7 @@
 """
 IESO Predispatch Hourly Intertie LMP Watcher
 =============================================
-Polls the IESO public reports directory every 30 seconds starting at :05 past
+Polls the IESO public reports directory every 5 seconds starting at :05 past
 each hour, and sends a macOS notification when a new predispatch file drops.
 
 Instead of guessing the version number, it scrapes the directory listing and
@@ -22,9 +22,8 @@ import urllib.error
 from datetime import datetime, timezone, timedelta
 
 # ── Config ──────────────────────────────────────────────────────────
-POLL_INTERVAL = 30          # seconds between checks
+POLL_INTERVAL = 5           # seconds between checks
 POLL_START_MINUTE = 5       # start polling at :05 past the hour
-POLL_WARN_MINUTE = 20       # send warning notification if not found by :20
 POLL_TIMEOUT_MINUTE = 25    # stop polling at :25 if still not found
 BASE_URL = "https://reports-public.ieso.ca/public/PredispHourlyIntertieLMP"
 EST = timezone(timedelta(hours=-5))
@@ -75,18 +74,15 @@ def main():
     print("  IESO Predispatch Intertie LMP Watcher")
     print("=" * 60)
     print(f"  Polling every {POLL_INTERVAL}s from :{POLL_START_MINUTE:02d} to :{POLL_TIMEOUT_MINUTE:02d} each hour")
-    print(f"  Warning notification at :{POLL_WARN_MINUTE:02d} if no new file found")
     print(f"  Report: PredispHourlyIntertieLMP")
     print("=" * 60)
     print()
 
     last_notified_version = None   # highest version we already notified for
-    warned_hour = None             # hour we already sent a delay warning for
 
     while True:
         now = get_est_now()
         minute = now.minute
-        hour_key = now.strftime("%Y%m%d_%H")
 
         if POLL_START_MINUTE <= minute < POLL_TIMEOUT_MINUTE:
             print(f"[{now.strftime('%H:%M:%S')} EST]  Checking directory for latest version...", end="", flush=True)
@@ -131,20 +127,7 @@ def main():
 
             print(status, end="\r", flush=True)
 
-        # Warning at :20 if no new version found this hour
-        if minute >= POLL_WARN_MINUTE and hour_key != warned_hour:
-            latest = get_latest_version(now)
-            version_key = f"{now.strftime('%Y%m%d')}_v{latest}" if latest else None
-            if version_key != last_notified_version:
-                print(f"\n  ⚠️  No new file found by :{POLL_WARN_MINUTE:02d}. May be delayed.\n")
-                notify(
-                    "⚠️ IESO Reports",
-                    f"{now.strftime('%b %d')} {now.strftime('%H:%M')} EST - DELAYED",
-                    sound="Basso"
-                )
-                warned_hour = hour_key
-
-        time.sleep(10)
+        time.sleep(POLL_INTERVAL)
 
 
 if __name__ == "__main__":
