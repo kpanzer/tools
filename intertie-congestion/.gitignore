@@ -1,0 +1,11 @@
+# Runtime outputs
+scan.log
+dashboard.html
+
+# Editor / local
+.DS_Store
+__pycache__/
+*.pyc
+
+# Claude preview
+.claude/
