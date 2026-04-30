@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="300">
+<title>IESO Congestion Picture HE 5 to HE 14</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,monospace;
+       background:#0d1117;color:#c9d1d9;padding:20px 24px;min-height:100vh}
+  h1{font-size:20px;font-weight:700;letter-spacing:.3px;margin-bottom:6px;color:#f0f6fc}
+  h1 span{color:#3fb950}
+  .meta{font-size:12px;color:#c9d1d9;margin-bottom:6px}
+  .sources{font-size:12px;color:#c9d1d9;margin-bottom:20px}
+  .sources a{color:#58a6ff;text-decoration:none;margin-right:14px;font-weight:500}
+  .sources a:hover{text-decoration:underline}
+
+  /* Notification preview — macOS style */
+  .notif-label{font-size:11px;color:#8b949e;margin-bottom:6px;
+               text-transform:uppercase;letter-spacing:.5px}
+  .notif{background:rgba(28,33,40,.85);backdrop-filter:blur(20px);
+         border:1px solid #30363d;border-radius:12px;padding:10px 14px;
+         display:flex;gap:12px;align-items:flex-start;
+         max-width:420px;margin-bottom:20px;
+         box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .notif-icon{width:36px;height:36px;border-radius:8px;
+              background:linear-gradient(135deg,#3fb950,#238636);
+              display:flex;align-items:center;justify-content:center;
+              flex-shrink:0;font-size:18px;color:#fff}
+  .notif-body{flex:1;min-width:0}
+  .notif-app{font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+  .notif-title{font-size:13px;font-weight:600;color:#f0f6fc;margin-bottom:3px}
+  .notif-msg{font-size:12px;color:#c9d1d9;white-space:pre-wrap;line-height:1.4}
+  .notif-time{font-size:10px;color:#8b949e;flex-shrink:0}
+
+  .zone{background:#161b22;border:1px solid #30363d;border-radius:8px;
+        margin-bottom:14px;padding:14px 18px}
+  .zone-head{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}
+  .zone-name{font-size:15px;font-weight:600;color:#f0f6fc}
+  .system-box{background:#161b22;border:1px solid #30363d;border-radius:8px;
+              margin-bottom:14px;padding:14px 18px}
+  .system-box h3{font-size:14px;color:#f0f6fc;margin-bottom:10px;font-weight:600}
+  tr.demand-row td{color:#f0f6fc;font-weight:500}
+  tr.excess-row td{color:#c9d1d9;font-weight:500}
+  tr.excess-tight td:first-child,tr.excess-tight td{color:#fbbf24}
+  tr.excess-short td:first-child,tr.excess-short td{color:#f85149}
+  .dir-block{margin-top:10px}
+  .dir-block + .dir-block{
+    margin-top:28px;
+    padding-top:20px;
+    border-top:2px solid #30363d;
+  }
+  .dir-label{font-size:14px;color:#f0f6fc;margin-bottom:10px;
+             text-transform:uppercase;letter-spacing:.6px;font-weight:700;
+             display:inline-block;padding:4px 10px;border-radius:4px;
+             background:rgba(139,148,158,.12);border-left:3px solid #6e7681}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:6px 10px;text-align:right;border:1px solid #30363d;white-space:nowrap}
+  th{background:#1c2128;color:#e5e7eb;font-weight:600;text-align:center}
+  th:first-child,td:first-child{text-align:left;color:#f0f6fc;font-weight:600}
+  td.status{text-align:center;font-size:14px}
+  tr.status-critical td.status{background:rgba(248,81,73,.25)}
+  tr.status-warning  td.status{background:rgba(251,191,36,.22)}
+  tr.status-open     td.status{background:rgba(63,185,80,.18)}
+  td.status-critical{background:rgba(248,81,73,.15);color:#f85149}
+  td.status-warning {background:rgba(251,191,36,.12);color:#fbbf24}
+  td.status-open    {background:rgba(63,185,80,.10);color:#3fb950}
+  .na{color:#c9d1d9}
+  .corridor-picker{display:flex;gap:10px;align-items:center;margin-bottom:14px;
+                   font-size:14px}
+  .corridor-picker label{color:#e5e7eb;font-weight:500}
+  .corridor-picker select{background:#1c2128;color:#c9d1d9;border:1px solid #30363d;
+                          border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;
+                          font-family:inherit}
+  .corridor-picker select:focus{outline:2px solid #3fb950;outline-offset:1px}
+  .legend-swatch{display:inline-block;width:12px;height:12px;border-radius:2px;
+                 vertical-align:middle;margin-right:4px}
+  .legend-bar{display:flex;gap:16px;font-size:12px;color:#c9d1d9;margin-top:4px;
+              margin-bottom:10px;flex-wrap:wrap}
+
+  /* HE-row tables + capacity gauge */
+  .flow-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+  .flow-table th,.flow-table td{padding:8px 10px;border-bottom:1px solid #21262d;white-space:nowrap}
+  .flow-table th{background:#1c2128;color:#e5e7eb;font-weight:600;text-align:right;
+                 font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+  .flow-table th:first-child,.flow-table td:first-child{text-align:left;font-weight:600;color:#f0f6fc}
+  .flow-table td{text-align:right;color:#e5e7eb}
+  .flow-table td.sched-exp{color:#f59e0b;font-weight:700}
+  .flow-table td.sched-imp{color:#60a5fa;font-weight:700}
+  .flow-table td.util-critical{color:#f85149;background:rgba(248,81,73,.18);font-weight:700}
+  .flow-table td.util-warning {color:#fbbf24;background:rgba(251,191,36,.16);font-weight:700}
+  .flow-table td.util-open    {color:#3fb950;background:rgba(63,185,80,.10);font-weight:700}
+  /* Focus columns: Remain + Util — always visually lifted */
+  .flow-table td.focus-col{background:rgba(88,166,255,.06);font-weight:600;color:#f0f6fc}
+  .flow-table td.util-critical.focus-col{background:rgba(248,81,73,.22)}
+  .flow-table td.util-warning.focus-col {background:rgba(251,191,36,.20)}
+  .flow-table td.util-open.focus-col    {background:rgba(63,185,80,.14)}
+  .flow-table th.focus-col{background:#262d36;color:#f0f6fc;border-left:1px solid #3b434c;border-right:1px solid #3b434c}
+  .flow-table td.focus-col{border-left:1px solid rgba(88,166,255,.20);border-right:1px solid rgba(88,166,255,.20)}
+  .flow-table td.status-cell{text-align:center;width:48px;font-size:11px;font-weight:700;letter-spacing:.3px}
+  .status-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle}
+  .status-dot.critical{background:#f85149;box-shadow:0 0 6px rgba(248,81,73,.6)}
+  .status-dot.warning{background:#fbbf24;box-shadow:0 0 6px rgba(251,191,36,.5)}
+  .status-dot.open{background:#3fb950;box-shadow:0 0 6px rgba(63,185,80,.4)}
+  .status-dot.na{background:#6e7681}
+  .flow-table td.he-cell{color:#f0f6fc;font-weight:600}
+  /* Past HEs: slightly darker bg band */
+  .flow-table tr.past td{background:rgba(110,118,129,.10)}
+  .flow-table tr.past td.he-cell{color:#c9d1d9}
+  .flow-table tr.past td.he-cell::before{content:"← ";color:#8b949e;font-weight:400}
+  /* Current HE: just mark the HE label with "· NOW" — no row highlight */
+  .flow-table tr.current td.he-cell{color:#58a6ff;font-weight:800}
+  .flow-table tr.current td.he-cell::after{content:" · NOW";font-size:10px;font-weight:700;color:#58a6ff;letter-spacing:.5px}
+  /* Section heading rows (Past / Now-and-forward) */
+  .flow-table tr.sec-head td{background:#0d1117;color:#8b949e;
+    font-size:10px;text-transform:uppercase;letter-spacing:.5px;
+    padding:8px 10px 4px;border-bottom:1px solid #30363d;text-align:left;font-weight:700}
+
+  /* Capacity gauge cell */
+  .gauge-cell{width:40%;padding:8px 12px !important}
+  .gauge{position:relative;height:22px;background:transparent;
+         border-radius:3px;overflow:visible}
+  .gauge-track{position:absolute;top:0;height:100%;display:flex}
+  .gauge-seg{height:100%}
+  .gauge-seg.sched-exp{background:#fbbf24}
+  .gauge-seg.sched-imp{background:#60a5fa}
+  .gauge-seg.usable{background:rgba(255,255,255,.10)}
+  .gauge-seg.blocked{background:repeating-linear-gradient(
+         45deg,rgba(167,139,250,.32) 0 5px,rgba(124,92,235,.12) 5px 10px)}
+  .gauge-tick{position:absolute;top:-2px;bottom:-2px;width:2px;background:#6e7681}
+  .gauge-tick.bind{background:#f0f6fc}
+  .gauge-label{position:absolute;font-size:10px;color:#c9d1d9;
+               top:22px;transform:translateX(-50%);white-space:nowrap;line-height:1.2}
+  .gauge-label.bind{color:#f0f6fc;font-weight:700}
+  .gauge-zero{position:absolute;top:-3px;bottom:-3px;width:2px;background:#6e7681;left:50%}
+</style>
+</head>
+<body>
+  <h1>IESO Congestion Picture <span id="windowTitle" style="color:#c9d1d9"></span></h1>
+  <div class="meta" id="meta"></div>
+  <div class="sources" id="sources"></div>
+
+  <div id="systemTable"></div>
+
+  <div class="corridor-picker">
+    <label for="corridorSelect">View corridor:</label>
+    <select id="corridorSelect">
+      <option value="NY">NYSI (New York — Roseton)</option>
+      <option value="MI">MISI (Michigan — Ludington)</option>
+      <option value="MN">MNSI (Minnesota — Intl Falls)</option>
+      <option value="MB">MBSI (Manitoba)</option>
+      <option value="PQ">PQSI (Quebec — summed)</option>
+    </select>
+  </div>
+
+  <div id="zones"></div>
+
+<script>
+const DATA = {"generated_at": "2026-04-30T06:05:07.445467-05:00", "title_window": "HE 5 to HE 14", "notif_title": "IESO Congestion Picture HE 5 to HE 14", "notif_body": "Updated 06:05 EST", "hours_spec": [["20260430", 5], ["20260430", 6], ["20260430", 7], ["20260430", 8], ["20260430", 9], ["20260430", 10], ["20260430", 11], ["20260430", 12], ["20260430", 13], ["20260430", 14]], "limits_by_date": {"20260430": {"created_at": "2026-04-30T05:11:43", "delivery_date": "2026-04-30"}}, "predisp_urls": {"20260430": "https://reports-public.ieso.ca/public/PredispIntertieSchedLimits/PUB_PredispIntertieSchedLimits_20260430_v10.xml"}, "nyiso_urls": {"20260430": "https://mis.nyiso.com/public/htm/atc_ttc/20260430atc_ttc.htm"}, "adeq_urls": {}, "ontario_demand": [null, null, null, null, null, null, null, null, null, null], "excess": [null, null, null, null, null, null, null, null, null, null], "zones": {"NY": {"name": "NYSI (New York \u2014 Roseton)", "export": [{"date": "20260430", "he": 5, "iso_limit": 550, "ny_ttc": 1150, "ny_real": 850, "ny_atc": 403, "binding": 550, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 6, "iso_limit": 550, "ny_ttc": 1150, "ny_real": 850, "ny_atc": 445, "binding": 550, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 7, "iso_limit": 550, "ny_ttc": 1150, "ny_real": 850, "ny_atc": 329, "binding": 550, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 8, "iso_limit": 850, "ny_ttc": 1150, "ny_real": 850, "ny_atc": 345, "binding": 850, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 9, "iso_limit": 850, "ny_ttc": 1150, "ny_real": 850, "ny_atc": 417, "binding": 850, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 10, "iso_limit": 850, "ny_ttc": 1150, "ny_real": 850, "ny_atc": 452, "binding": 850, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 11, "iso_limit": 850, "ny_ttc": 1150, "ny_real": 850, "ny_atc": 355, "binding": 850, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 12, "iso_limit": 850, "ny_ttc": 1150, "ny_real": 850, "ny_atc": 581, "binding": 850, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 13, "iso_limit": 850, "ny_ttc": 1150, "ny_real": 850, "ny_atc": 581, "binding": 850, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 14, "iso_limit": 850, "ny_ttc": 1150, "ny_real": 850, "ny_atc": 641, "binding": 850, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}], "import": [{"date": "20260430", "he": 5, "iso_limit": 700, "ny_ttc": 1000, "ny_real": 700, "ny_atc": 700, "binding": 700, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 6, "iso_limit": 700, "ny_ttc": 1000, "ny_real": 700, "ny_atc": 700, "binding": 700, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 7, "iso_limit": 700, "ny_ttc": 1000, "ny_real": 700, "ny_atc": 700, "binding": 700, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 8, "iso_limit": 700, "ny_ttc": 1000, "ny_real": 700, "ny_atc": 700, "binding": 700, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 9, "iso_limit": 700, "ny_ttc": 1000, "ny_real": 700, "ny_atc": 700, "binding": 700, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 10, "iso_limit": 700, "ny_ttc": 1000, "ny_real": 700, "ny_atc": 700, "binding": 700, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 11, "iso_limit": 700, "ny_ttc": 1000, "ny_real": 700, "ny_atc": 700, "binding": 700, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 12, "iso_limit": 700, "ny_ttc": 1000, "ny_real": 700, "ny_atc": 700, "binding": 700, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 13, "iso_limit": 700, "ny_ttc": 1000, "ny_real": 700, "ny_atc": 700, "binding": 700, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 14, "iso_limit": 700, "ny_ttc": 1000, "ny_real": 700, "ny_atc": 700, "binding": 700, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}]}, "MI": {"name": "MISI (Michigan \u2014 Ludington)", "export": [{"date": "20260430", "he": 5, "iso_limit": 1450, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1450, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 6, "iso_limit": 1450, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1450, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 7, "iso_limit": 1450, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1450, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 8, "iso_limit": 1450, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1450, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 9, "iso_limit": 1450, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1450, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 10, "iso_limit": 1450, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1450, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 11, "iso_limit": 1450, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1450, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 12, "iso_limit": 1450, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1450, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 13, "iso_limit": 1450, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1450, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 14, "iso_limit": 1450, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1450, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}], "import": [{"date": "20260430", "he": 5, "iso_limit": 1350, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1350, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 6, "iso_limit": 1350, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1350, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 7, "iso_limit": 1350, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1350, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 8, "iso_limit": 1350, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1350, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 9, "iso_limit": 1350, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1350, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 10, "iso_limit": 1350, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1350, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 11, "iso_limit": 1350, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1350, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 12, "iso_limit": 1350, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1350, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 13, "iso_limit": 1350, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1350, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 14, "iso_limit": 1350, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1350, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}]}, "MN": {"name": "MNSI (Minnesota \u2014 Intl Falls)", "export": [{"date": "20260430", "he": 5, "iso_limit": 50, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 50, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 6, "iso_limit": 50, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 50, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 7, "iso_limit": 50, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 50, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 8, "iso_limit": 50, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 50, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 9, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 10, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 11, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 12, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 13, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 14, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}], "import": [{"date": "20260430", "he": 5, "iso_limit": 80, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 80, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 6, "iso_limit": 80, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 80, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 7, "iso_limit": 80, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 80, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 8, "iso_limit": 80, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 80, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 9, "iso_limit": 80, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 80, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 10, "iso_limit": 80, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 80, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 11, "iso_limit": 80, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 80, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 12, "iso_limit": 80, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 80, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 13, "iso_limit": 80, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 80, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 14, "iso_limit": 80, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 80, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}]}, "MB": {"name": "MBSI (Manitoba)", "export": [{"date": "20260430", "he": 5, "iso_limit": 50, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 50, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 6, "iso_limit": 50, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 50, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 7, "iso_limit": 50, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 50, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 8, "iso_limit": 50, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 50, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 9, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 10, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 11, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 12, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 13, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 14, "iso_limit": 25, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 25, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}], "import": [{"date": "20260430", "he": 5, "iso_limit": 126, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 126, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 6, "iso_limit": 126, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 126, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 7, "iso_limit": 126, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 126, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 8, "iso_limit": 126, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 126, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 9, "iso_limit": 126, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 126, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 10, "iso_limit": 126, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 126, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 11, "iso_limit": 126, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 126, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 12, "iso_limit": 126, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 126, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 13, "iso_limit": 126, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 126, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 14, "iso_limit": 126, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 126, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}]}, "PQ": {"name": "PQSI (Quebec \u2014 summed)", "export": [{"date": "20260430", "he": 5, "iso_limit": 1420, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1420, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 6, "iso_limit": 1420, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1420, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 7, "iso_limit": 1420, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1420, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 8, "iso_limit": 1420, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1420, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 9, "iso_limit": 1420, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1420, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 10, "iso_limit": 1420, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1420, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 11, "iso_limit": 1420, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1420, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 12, "iso_limit": 1420, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1420, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 13, "iso_limit": 1420, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1420, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 14, "iso_limit": 1420, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 1420, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}], "import": [{"date": "20260430", "he": 5, "iso_limit": 2205, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 2205, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 6, "iso_limit": 2205, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 2205, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 7, "iso_limit": 2205, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 2205, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 8, "iso_limit": 2205, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 2205, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 9, "iso_limit": 2205, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 2205, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 10, "iso_limit": 2205, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 2205, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 11, "iso_limit": 2205, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 2205, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 12, "iso_limit": 2205, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 2205, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 13, "iso_limit": 2205, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 2205, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}, {"date": "20260430", "he": 14, "iso_limit": 2205, "ny_ttc": null, "ny_real": null, "ny_atc": null, "binding": 2205, "scheduled": null, "remaining": null, "utilization": null, "status": "n/a"}]}}, "alerts": [], "has_alerts": false};
+const ICONS = {critical:"🔴", warning:"⚠️", open:"✅", "n/a":"⚪"};
+const FIRST_DATE = DATA.hours_spec[0][0];
+
+function fmt(v){ return v==null ? '<span class="na">—</span>' : v; }
+function fmtPct(v){ return v==null ? '<span class="na">—</span>' : v+'%'; }
+
+function renderMeta(){
+  const d = DATA.generated_at.slice(0,16).replace('T',' ');
+  document.getElementById('windowTitle').textContent = DATA.title_window;
+  document.getElementById('meta').innerHTML = `Generated at ${d} (EST) — page auto-refreshes every 5 min`;
+
+  // Predisp limits: link per unique date (may be 1 or 2 files)
+  const pdLinks = Object.entries(DATA.predisp_urls || {}).map(([d,u]) =>
+    `<a href="${u}" target="_blank">ONT PD limits (${d.slice(4,6)}/${d.slice(6,8)}) ↗</a>`
+  ).join(' ');
+  const adeqLinks = Object.entries(DATA.adeq_urls).map(([d,u]) =>
+    `<a href="${u}" target="_blank">IESO Adequacy3 (${d.slice(4,6)}/${d.slice(6,8)}) ↗</a>`
+  ).join(' ');
+  const nyLinks = Object.entries(DATA.nyiso_urls).map(([d,u]) =>
+    `<a href="${u}" target="_blank">NYISO ATC/TTC (${d.slice(4,6)}/${d.slice(6,8)}) ↗</a>`
+  ).join(' ');
+  document.getElementById('sources').innerHTML = `${pdLinks} ${adeqLinks} ${nyLinks}`;
+}
+
+function renderNotifPreview(){
+  const hasAlerts = DATA.has_alerts;
+  const iconBg = hasAlerts ? 'linear-gradient(135deg,#f85149,#9e2626)' : 'linear-gradient(135deg,#3fb950,#238636)';
+  const icon = hasAlerts ? '⚠️' : '✅';
+  const body = (DATA.notif_body || '').replace(/</g,'&lt;');
+  const time = new Date(DATA.generated_at).toLocaleTimeString('en-US',
+    {hour:'numeric', minute:'2-digit', hour12:false});
+  document.getElementById('notifBox').innerHTML = `
+    <div class="notif">
+      <div class="notif-icon" style="background:${iconBg}">${icon}</div>
+      <div class="notif-body">
+        <div class="notif-app">Terminal · now</div>
+        <div class="notif-title">${DATA.notif_title}</div>
+        <div class="notif-msg">${body}</div>
+      </div>
+      <div class="notif-time">${time}</div>
+    </div>`;
+}
+
+function heHeaders(){
+  return DATA.hours_spec.map(([d,he]) => `<th>HE ${he}</th>`).join('');
+}
+
+function renderSystemTable(){
+  const hdrs = heHeaders();
+  const demCells = DATA.ontario_demand.map(v => `<td>${fmt(v)}</td>`).join('');
+  const excCells = DATA.excess.map(v => {
+    if (v == null) return '<td><span class="na">—</span></td>';
+    return `<td>${v>=0?'+':''}${v}</td>`;
+  }).join('');
+  const excVals = DATA.excess.filter(v => v!=null);
+  const minExc = excVals.length ? Math.min(...excVals) : null;
+  let excClass = '';
+  if (minExc != null){
+    if (minExc <= 0) excClass = 'excess-short';
+    else if (minExc < 500) excClass = 'excess-tight';
+  }
+  document.getElementById('systemTable').innerHTML = `
+    <div class="system-box">
+      <h3>Ontario System</h3>
+      <table>
+        <thead><tr><th>Limits / Availability</th>${hdrs}</tr></thead>
+        <tbody>
+          <tr class="demand-row"><td>Demand Forecast (MW)</td>${demCells}</tr>
+          <tr class="excess-row ${excClass}"><td>Excess Capacity (MW)</td>${excCells}</tr>
+        </tbody>
+      </table>
+    </div>`;
+}
+
+// ── HE-row tables with inline capacity gauges ──────────────────────
+function gaugeCell(row, direction, scaleMax, isNY){
+  // Each segment width is a % of scaleMax.
+  // Order (left-to-right): scheduled → usable → blocked.
+  if (row.binding == null){
+    return '<div class="gauge"><span style="color:#8b949e;font-size:11px">—</span></div>';
+  }
+  const sched = row.scheduled != null ? Math.abs(row.scheduled) : 0;
+  const usable = row.remaining != null ? row.remaining : 0;
+  const other = (isNY && row.ny_real != null && row.iso_limit != null)
+                ? Math.max(row.ny_real, row.iso_limit) : row.binding;
+  const blocked = Math.max(0, other - row.binding);
+  const pct = v => (v / scaleMax * 100).toFixed(2) + '%';
+  const schedCls = direction === 'export' ? 'sched-exp' : 'sched-imp';
+
+  // Segments
+  let segs = `<div class="gauge-seg ${schedCls}" style="width:${pct(sched)}"
+                title="Scheduled ${sched} MW"></div>`;
+  segs += `<div class="gauge-seg usable" style="width:${pct(usable)}"
+              title="Usable room ${usable} MW"></div>`;
+  if (blocked > 0 && isNY){
+    segs += `<div class="gauge-seg blocked" style="width:${pct(blocked)}"
+                title="Held back by the tighter limit: ${blocked} MW"></div>`;
+  }
+
+  // Ticks: binding (bright white), IESO & NYISO (muted)
+  const ticks = [];
+  ticks.push(`<div class="gauge-tick bind" style="left:${pct(row.binding)}" title="Binding ${row.binding} MW"></div>`);
+  if (isNY && row.iso_limit != null && row.iso_limit !== row.binding){
+    ticks.push(`<div class="gauge-tick" style="left:${pct(row.iso_limit)}" title="IESO limit ${row.iso_limit} MW"></div>`);
+  }
+  if (isNY && row.ny_real != null && row.ny_real !== row.binding){
+    ticks.push(`<div class="gauge-tick" style="left:${pct(row.ny_real)}" title="NYISO TTC−300 = ${row.ny_real} MW"></div>`);
+  }
+
+  return `<div class="gauge"><div class="gauge-track" style="width:100%">${segs}</div>${ticks.join('')}</div>`;
+}
+
+function renderDirectionTable(k, direction, rows, isNY){
+  // Scale max = max binding + blocked across all rows in this direction (so all gauges share scale).
+  let scaleMax = 0;
+  for (const r of rows){
+    if (r.binding != null) scaleMax = Math.max(scaleMax, r.binding);
+    if (isNY && r.iso_limit != null) scaleMax = Math.max(scaleMax, r.iso_limit);
+    if (isNY && r.ny_real != null) scaleMax = Math.max(scaleMax, r.ny_real);
+  }
+  if (scaleMax <= 0) scaleMax = 1;
+
+  const dirWord = direction === 'export' ? 'Export' : 'Import';
+  const arrow = direction === 'export' ? 'ON → ' + k : k + ' → ON';
+
+  const cols = [];
+  cols.push(`<th>HE</th>`);
+  cols.push(`<th>ONT PD<br><span style="font-size:10px;font-weight:400">scheduling limit</span></th>`);
+  if (isNY){
+    cols.push(`<th>NY TTC<br><span style="color:#60a5fa;font-size:10px">(listed)</span></th>`);
+    cols.push(`<th>NY TTC<br><span style="color:#60a5fa;font-size:10px">(−300)</span></th>`);
+    cols.push(`<th>NY ATC</th>`);
+    cols.push(`<th>Binding</th>`);
+  }
+  cols.push(`<th>Scheduled</th>`);
+  cols.push(`<th class="focus-col">Remain</th>`);
+  cols.push(`<th class="focus-col">Util</th>`);
+  cols.push(`<th class="gauge-cell">0 MW → ${scaleMax} MW (capacity envelope)</th>`);
+  cols.push(`<th>Status</th>`);
+
+  let html = `<div class="dir-block">
+    <div class="dir-label">${arrow} (${dirWord})</div>
+    <table class="flow-table">
+      <thead><tr>${cols.join('')}</tr></thead>
+      <tbody>`;
+
+  const STATUS_LABEL = {critical:'CRIT', warning:'WARN', open:'OK', 'n/a':'—'};
+  const STATUS_COLOR = {critical:'#f85149', warning:'#fbbf24', open:'#3fb950', 'n/a':'#c9d1d9'};
+
+  // Determine which hour-spec index is "current" based on now wall-clock (EST)
+  // Current HE = hour+1 in EST. Server-calculated once at page load time.
+  const nowEst = new Date(Date.now() + (new Date().getTimezoneOffset() - 300) * 60000);
+  const currentHe = (nowEst.getHours() + 1);
+  const currentDate = [nowEst.getFullYear(),
+    String(nowEst.getMonth()+1).padStart(2,'0'),
+    String(nowEst.getDate()).padStart(2,'0')].join('');
+  let currentIdx = DATA.hours_spec.findIndex(([d,he]) => d === currentDate && he === currentHe);
+  if (currentIdx < 0) currentIdx = 0;  // fallback: first row is "current"
+
+  const colSpan = isNY ? 11 : 8;
+
+  for (let i = 0; i < rows.length; i++){
+    const r = rows[i];
+    const [d, he] = DATA.hours_spec[i];
+    const utilCls = r.status === 'critical' ? 'util-critical'
+                  : r.status === 'warning'  ? 'util-warning'
+                  : r.status === 'open'     ? 'util-open' : '';
+    const schedCls = direction === 'export' ? 'sched-exp' : 'sched-imp';
+    const schedVal = r.scheduled == null ? '—'
+                   : (r.scheduled > 0 ? '+'+r.scheduled : r.scheduled);
+
+    // Section headers
+    if (i === 0 && currentIdx > 0){
+      html += `<tr class="sec-head"><td colspan="${colSpan}">Past hours (last ${currentIdx}h · already cleared)</td></tr>`;
+    }
+    if (i === currentIdx && currentIdx >= 0){
+      html += `<tr class="sec-head"><td colspan="${colSpan}">Current hour &amp; forecast (pre-dispatch)</td></tr>`;
+    }
+
+    const rowCls = i < currentIdx ? 'past' : (i === currentIdx ? 'current' : '');
+    const cells = [];
+    cells.push(`<td class="he-cell">HE ${he}</td>`);
+    cells.push(`<td>${fmt(r.iso_limit)}</td>`);
+    if (isNY){
+      cells.push(`<td>${fmt(r.ny_ttc)}</td>`);
+      cells.push(`<td>${fmt(r.ny_real)}</td>`);
+      cells.push(`<td>${fmt(r.ny_atc)}</td>`);
+      cells.push(`<td>${fmt(r.binding)}</td>`);
+    }
+    cells.push(`<td class="${schedCls}">${schedVal}</td>`);
+    cells.push(`<td class="focus-col">${fmt(r.remaining)}</td>`);
+    cells.push(`<td class="focus-col ${utilCls}">${r.utilization != null ? r.utilization+'%' : '—'}</td>`);
+    cells.push(`<td class="gauge-cell">${gaugeCell(r, direction, scaleMax, isNY)}</td>`);
+    const sColor = STATUS_COLOR[r.status] || '#8b949e';
+    const sLabel = STATUS_LABEL[r.status] || '—';
+    cells.push(`<td class="status-cell" style="color:${sColor}">
+      <span class="status-dot ${r.status}"></span>${sLabel}</td>`);
+
+    html += `<tr class="${rowCls}">${cells.join('')}</tr>`;
+  }
+
+  html += `</tbody></table></div>`;
+  return html;
+}
+
+function renderSelectedZone(k){
+  const container = document.getElementById('zones');
+  const z = DATA.zones[k];
+  if (!z){ container.innerHTML = ''; return; }
+  const isNY = (k === 'NY');
+  const legend = `
+    <div class="legend-bar">
+      <span><span class="legend-swatch" style="background:#fbbf24"></span>Export scheduled</span>
+      <span><span class="legend-swatch" style="background:#60a5fa"></span>Import scheduled</span>
+      <span><span class="legend-swatch" style="background:rgba(255,255,255,.10)"></span>Usable room (up to binding)</span>
+      ${isNY ? '<span><span class="legend-swatch" style="background:repeating-linear-gradient(45deg,rgba(167,139,250,.32) 0 4px,rgba(124,92,235,.12) 4px 8px)"></span>Blocked by tighter limit</span>' : ''}
+      <span><span class="legend-swatch" style="background:#f0f6fc"></span>Binding tick (bright)</span>
+      ${isNY ? '<span><span class="legend-swatch" style="background:#6e7681"></span>Other limit tick</span>' : ''}
+    </div>`;
+  container.innerHTML = `<div class="zone">
+    <div class="zone-head"><div class="zone-name">${z.name}</div></div>
+    ${legend}
+    ${renderDirectionTable(k, 'export', z.export, isNY)}
+    ${renderDirectionTable(k, 'import', z.import, isNY)}
+  </div>`;
+}
+
+function render(){
+  const k = document.getElementById('corridorSelect').value;
+  renderSelectedZone(k);
+}
+
+renderMeta();
+renderSystemTable();
+document.getElementById('corridorSelect').addEventListener('change', render);
+render();
+</script>
+</body>
+</html>
